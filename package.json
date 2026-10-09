@@ -1,0 +1,12 @@
+{
+  "name": "spring-boot-todolist",
+  "version": "0.0.1",
+  "private": true,
+  "description": "Root manifest. The UI lives in frontend/; this only installs the git hooks.",
+  "scripts": {
+    "prepare": "husky"
+  },
+  "devDependencies": {
+    "husky": "9.1.7"
+  }
+}

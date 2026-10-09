@@ -1,0 +1,11 @@
+#!/bin/sh
+
+current_branch=$(git rev-parse --abbrev-ref HEAD)
+
+case "$current_branch" in
+  develop*|release*)
+    echo "❌ ブランチ保護エラー: '$current_branch' への直接プッシュは許可されていません。"
+    echo "   作業ブランチを作成し、マージリクエスト経由でのマージをお願いします。"
+    exit 1
+    ;;
+esac
