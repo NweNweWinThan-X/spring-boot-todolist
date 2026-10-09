@@ -4,18 +4,38 @@ services:
   app:
     container_name: todolist-app
     build: .
-    image: spring-boot-todolist:${IMAGE_VERSION:-latest}
+    image: spring-boot-todolist-api:${IMAGE_VERSION:-latest}
     environment:
       SPRING_PROFILES_ACTIVE: docker
       TZ: Asia/Tokyo
       DB_URL: jdbc:postgresql://db:5432/todolist
       DB_USERNAME: ${DB_USERNAME:-todolist}
       DB_PASSWORD: ${DB_PASSWORD:?DB_PASSWORD is required}
+      # Required: without it every restart generates a new key and invalidates
+      # issued tokens, and two replicas would not accept each other's.
+      JWT_SECRET: ${JWT_SECRET:?JWT_SECRET is required}
     ports:
       - "9002:8080"
     depends_on:
       db:
         condition: service_healthy
+    restart: unless-stopped
+
+  web:
+    container_name: todolist-web
+    build:
+      context: ./frontend
+      args:
+        # Baked into the bundle at build time, so it must be the URL the browser
+        # uses, not the one the compose network uses.
+        VITE_API_BASE_URL: ${API_BASE_URL:-http://localhost:9002/api/v1}
+    image: spring-boot-todolist-web:${IMAGE_VERSION:-latest}
+    environment:
+      TZ: Asia/Tokyo
+    ports:
+      - "9001:80"
+    depends_on:
+      - app
     restart: unless-stopped
 
   db:

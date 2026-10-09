@@ -20,7 +20,7 @@ export default function App() {
             </Route>
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
-          <Toaster position="top-center" richColors closeButton />
+          <Toaster position="bottom-right" richColors closeButton />
         </AuthProvider>
       </BrowserRouter>
     </ThemeProvider>

@@ -64,7 +64,9 @@ test.describe('Authentication', () => {
       const token = window.localStorage.getItem(key) ?? '';
       window.localStorage.setItem(key, `${token.slice(0, -2)}XX`);
     });
-    await page.goto('/');
+    // The response interceptor redirects mid-navigation, which aborts goto(); the
+    // destination is what matters.
+    await page.goto('/').catch(() => undefined);
     await expect(page).toHaveURL(/\/login$/);
   });
 });

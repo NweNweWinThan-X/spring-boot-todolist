@@ -10,7 +10,7 @@ The English version is at [README.md](README.md).
 | バックエンド | Java 21, Spring Boot 4.0.1, Spring Security 7, Spring Data JPA, Flyway, PostgreSQL |
 | フロントエンド | React 19, TypeScript, Vite, Tailwind CSS, axios, lucide-react, sonner |
 | 認証 | ステートレス JWT（HS384） |
-| ドキュメント | [ER](docs/ER.md) · [FLOW](docs/FLOW.md) · [DESIGN](docs/DESIGN.md) · [TESTING](docs/TESTING.md) |
+| ドキュメント | [ER](docs/ER.md) · [FLOW](docs/FLOW.md) · [DESIGN](docs/DESIGN.md) · [TESTING](docs/TESTING.md) · [CI/CD](docs/CICD.md) |
 | 要件 | [task.md](task.md) |
 
 ---
@@ -197,11 +197,24 @@ make exec     # app コンテナに入る
 make clean    # 未使用イメージ削除
 ```
 
-アプリは `http://localhost:9002`、PostgreSQL は `localhost:9432` で公開されます。
-`DB_PASSWORD` は必須で、未設定の場合 `docker compose` は起動しません。
+| サービス | ポート |
+|--|--|
+| `web` — SPA を配信する nginx | 9001 |
+| `app` — REST API | 9002 |
+| `db` — PostgreSQL 17 | 9432 |
+
+`DB_PASSWORD` と `JWT_SECRET` は必須で、未設定の場合 `docker compose` は起動しません。
+SPA の API URL はビルド時にバンドルへ埋め込まれるため、変更時は `.env` の `API_BASE_URL` を
+設定して `web` イメージを再ビルドしてください。詳細は [CI/CD](docs/CICD.md) を参照。
 
 ### ブランチ保護
 
 `.husky/pre-push` は `develop` / `release` への直接プッシュを拒否します。`.husky/pre-commit`
 はコミット前にバックエンドをコンパイルします。フックはリポジトリ直下の `npm install` で
 有効化されます。
+
+## CI/CD
+
+GitHub Actions が push と pull request のたびにバックエンドテスト・フロントエンドビルド・
+Playwright・Docker ビルドを実行します。`v*` タグで API と SPA のイメージを GHCR に公開します。
+詳細は [CI/CD](docs/CICD.md) を参照してください。

@@ -10,7 +10,7 @@ JSON, and a separate Vite single-page app.
 | Backend | Java 21, Spring Boot 4.0.1, Spring Security 7, Spring Data JPA, Flyway, PostgreSQL |
 | Frontend | React 19, TypeScript, Vite, Tailwind CSS, axios, lucide-react, sonner |
 | Auth | Stateless JWT (HS384) |
-| Docs | [ER](docs/ER.md) · [FLOW](docs/FLOW.md) · [DESIGN](docs/DESIGN.md) · [TESTING](docs/TESTING.md) |
+| Docs | [ER](docs/ER.md) · [FLOW](docs/FLOW.md) · [DESIGN](docs/DESIGN.md) · [TESTING](docs/TESTING.md) · [CI/CD](docs/CICD.md) |
 | Build requirements | [task.md](task.md) |
 
 ---
@@ -199,10 +199,23 @@ make exec     # shell into the app container
 make clean    # prune unused images
 ```
 
-The app is published on `http://localhost:9002` and PostgreSQL on `localhost:9432`.
-`DB_PASSWORD` is required; `docker compose` refuses to start without it.
+| Service | Port |
+|--|--|
+| `web` — nginx serving the SPA | 9001 |
+| `app` — the REST API | 9002 |
+| `db` — PostgreSQL 17 | 9432 |
+
+`DB_PASSWORD` and `JWT_SECRET` are both required; `docker compose` refuses to start without
+them. The SPA's API URL is baked into its bundle at build time — set `API_BASE_URL` in `.env`
+and rebuild the `web` image when it changes. See [CI/CD](docs/CICD.md).
 
 ### Branch protection
 
 `.husky/pre-push` rejects direct pushes to `develop` and `release`. `.husky/pre-commit` compiles
 the backend first. Hooks install with `npm install` at the repository root.
+
+## CI/CD
+
+GitHub Actions runs the backend tests, the frontend build, the Playwright suite and a Docker
+build on every push and pull request. A `v*` tag publishes the API and SPA images to GHCR.
+Details in [CI/CD](docs/CICD.md).
