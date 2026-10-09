@@ -1,0 +1,18 @@
+@import "tailwindcss";
+
+/* Manual theme switch: the toggle adds or removes `.dark` on <html>. */
+@custom-variant dark (&:where(.dark, .dark *));
+
+@layer base {
+  body {
+    @apply bg-slate-50 text-slate-900 antialiased dark:bg-slate-950 dark:text-slate-100;
+  }
+}
+
+@utility accent-gradient {
+  background-image: linear-gradient(
+    to right,
+    var(--color-violet-500),
+    var(--color-fuchsia-500)
+  );
+}
