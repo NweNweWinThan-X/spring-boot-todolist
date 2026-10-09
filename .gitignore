@@ -1,0 +1,45 @@
+# --- Build output ---
+target/
+!.mvn/wrapper/maven-wrapper.jar
+build/
+
+# --- Frontend ---
+node_modules/
+dist/
+
+# --- Playwright ---
+/frontend/test-results/
+/frontend/playwright-report/
+/frontend/blob-report/
+/frontend/.playwright/
+.vite/
+*.tsbuildinfo
+
+# --- Secrets (security-audit No.19) ---
+application-prod.properties
+application-local.properties
+# The committed local profile holds only ${ENV_VAR} references, never literal credentials.
+# The rule above still catches any other copy (e.g. a developer's own override).
+!src/main/resources/application-local.properties
+.env
+.env.*
+!.env.example
+*.jks
+*.p12
+*.pem
+
+# --- IDE ---
+.idea/
+*.iml
+.vscode/
+.settings/
+.classpath
+.project
+
+# --- OS ---
+.DS_Store
+Thumbs.db
+
+# --- Logs ---
+*.log
+logs/

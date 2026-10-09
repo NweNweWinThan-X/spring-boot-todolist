@@ -1,0 +1,41 @@
+name: spring-boot-todolist
+
+services:
+  app:
+    container_name: todolist-app
+    build: .
+    image: spring-boot-todolist:${IMAGE_VERSION:-latest}
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      TZ: Asia/Tokyo
+      DB_URL: jdbc:postgresql://db:5432/todolist
+      DB_USERNAME: ${DB_USERNAME:-todolist}
+      DB_PASSWORD: ${DB_PASSWORD:?DB_PASSWORD is required}
+    ports:
+      - "9002:8080"
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+
+  db:
+    container_name: todolist-db
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: todolist
+      POSTGRES_USER: ${DB_USERNAME:-todolist}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:?DB_PASSWORD is required}
+      TZ: Asia/Tokyo
+    ports:
+      - "9432:5432"
+    volumes:
+      - todolist-db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME:-todolist} -d todolist"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+    restart: unless-stopped
+
+volumes:
+  todolist-db-data:

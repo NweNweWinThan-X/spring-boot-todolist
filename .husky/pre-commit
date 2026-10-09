@@ -1,0 +1,5 @@
+#!/bin/sh
+
+# コミット前にバックエンドをコンパイルし、壊れたコードの混入を防ぐ。
+# フロントエンドのビルドはコミット時には不要なためスキップする。
+./mvnw -B -ntp -q compile -Dskip.installnodenpm=true -Dskip.npm=true
