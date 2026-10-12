@@ -18,11 +18,11 @@ import org.springframework.transaction.annotation.Transactional;
 /**
  * Creates the first administrator from environment variables so no credential is committed.
  *
- * <p>Active in the {@code local} and {@code h2} profiles only; other environments seed accounts
- * out of band.
+ * <p>Active in the {@code local}, {@code dev} and {@code h2} profiles only; other
+ * environments seed accounts out of band.
  */
 @Component
-@Profile({"local", "h2"})
+@Profile({"local", "dev", "h2"})
 public class AdminBootstrapRunner implements ApplicationRunner {
 
   private static final Logger log = LoggerFactory.getLogger(AdminBootstrapRunner.class);

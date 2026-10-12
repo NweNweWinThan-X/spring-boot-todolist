@@ -10,8 +10,50 @@ The English version is at [README.md](README.md).
 | バックエンド | Java 21, Spring Boot 4.0.1, Spring Security 7, Spring Data JPA, Flyway, PostgreSQL |
 | フロントエンド | React 19, TypeScript, Vite, Tailwind CSS, axios, lucide-react, sonner |
 | 認証 | ステートレス JWT（HS384） |
-| ドキュメント | [ER](docs/ER.md) · [FLOW](docs/FLOW.md) · [DESIGN](docs/DESIGN.md) · [TESTING](docs/TESTING.md) · [CI/CD](docs/CICD.md) |
+| ドキュメント | [ER](docs/ER.md) · [FLOW](docs/FLOW.md) · [DESIGN](docs/DESIGN.md) · [TESTING](docs/TESTING.md) · [SEED](docs/SEED.md) · [CI/CD](docs/CICD.md) |
 | 要件 | [task.md](task.md) |
+| お試し | [2分で動かす](#2分で動かす) — ローカル実行。DBのインストール不要 |
+
+---
+
+## 2分で動かす
+
+> **公開中のデモはありません。** どこにもデプロイしていないため、クリックできるURLは存在しません。
+> 代わりに下のコマンドがプレビューです。JDK と Node だけあれば動き、データベースも設定も不要で、
+> 最初からデータが入った状態で起動します。
+
+```bash
+git clone https://github.com/NweNweWinThan-X/spring-boot-todolist.git
+cd spring-boot-todolist
+```
+
+```bash
+# ターミナル1 — API を :8080 で起動。インメモリH2、環境変数は不要
+./mvnw spring-boot:run -Dspring-boot.run.profiles=h2
+```
+
+```bash
+# ターミナル2 — SPA を :5173 で起動
+npm --prefix frontend install && npm --prefix frontend run dev
+```
+
+<http://localhost:5173> を開いてログインします。
+
+| | |
+|--|--|
+| ユーザー名 | `demo` |
+| パスワード | `Demo1234!` |
+
+このアカウントには3つのプロジェクトと4つのラベルにまたがる19件のタスクが入っています。
+期限切れ・今日・今後・受信箱・3種類のステータス・アイゼンハワーの4象限が、開いた時点で
+すべて埋まるように配置してあります。もう1つのアカウント `alex`（パスワード同じ）は、
+アカウント間でデータが見えないことを確認するためのものです。詳細は [SEED](docs/SEED.md)。
+
+プロセスの外には何も書き込みません。`h2` プロファイルはすべてメモリ上に置き、
+サーバーを止めると破棄します。
+
+> **ポートが固定なのは意図的です。** SPA は `http://localhost:8080/api/v1` を呼び、
+> API の CORS 許可リストには `:3000` と `:5173` しかありません。どちらかを変えると噛み合わなくなります。
 
 ---
 
@@ -42,6 +84,17 @@ cp .env.example .env     # DB_PASSWORD を設定する
 ```bash
 ./mvnw spring-boot:run -Dspring-boot.run.profiles=local
 ```
+
+環境変数なしで起動でき、デモデータが最初から入っているプロファイルが2つあります。
+ログインは `demo` / `Demo1234!` です。
+
+```bash
+./mvnw spring-boot:run -Dspring-boot.run.profiles=dev   # ローカルのPostgreSQL、環境変数不要
+./mvnw spring-boot:run -Dspring-boot.run.profiles=h2    # インメモリ、DBのインストール不要
+```
+
+`.env` を読むのは `docker compose` だけで、Spring Boot は読みません。詳細は
+[SEED](docs/SEED.md) を参照してください。
 
 起動時に Flyway がマイグレーションを適用します。API は `http://localhost:8080` で待ち受けます。
 
@@ -137,7 +190,7 @@ spring-boot-todolist/
 │  └─ shared/       config, domain, exception, log, security, web
 ├─ src/main/resources/db/migration/   Flyway
 ├─ frontend/        React + TypeScript の SPA
-├─ docs/            ER, FLOW, DESIGN
+├─ docs/            ER, FLOW, DESIGN, TESTING, SEED, CI/CD
 ├─ .claude/         このリポジトリで Claude Code が使うスキル
 ├─ .husky/          Git フック
 ├─ Dockerfile  docker-compose.yml  Makefile

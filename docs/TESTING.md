@@ -29,12 +29,29 @@ cd frontend && npm install && npm run dev -- --port 3000 --strictPort
 Open <http://localhost:3000>. Flyway migrates on first start; the schema arrives empty, so
 register an account to begin.
 
+**Or start with data already in it.** The `dev` profile needs no environment variables and
+loads a fixed demo dataset — 2 accounts, 5 projects, 5 labels, 21 tasks arranged so that every
+view, status, priority and Eisenhower quadrant is non-empty:
+
+```bash
+./mvnw spring-boot:run -Dspring-boot.run.profiles=dev     # PostgreSQL
+./mvnw spring-boot:run -Dspring-boot.run.profiles=h2      # in-memory, no database needed
+```
+
+Sign in as `demo` with `Demo1234!`. Every manual check below can be run against this data
+instead of typing tasks in by hand; the second account, `alex`, exists for the isolation
+scenario in §S2. See [SEED.md](SEED.md) for the full dataset and what each row demonstrates.
+
 > **Tokens and restarts.** With `JWT_SECRET` unset the signing key is random per process, so
 > every backend restart invalidates issued tokens and the SPA bounces you to `/login`. Export a
 > stable key to avoid that: `export JWT_SECRET=$(openssl rand -base64 48)`.
 
 To test without PostgreSQL, use `SPRING_PROFILES_ACTIVE=h2` — in-memory, Flyway off, H2 console
-at <http://localhost:8080/h2-console>.
+at <http://localhost:8080/h2-console>. That profile also seeds the demo data.
+
+> **`.env` is not read by Spring Boot.** It feeds `docker compose` only. When running
+> `./mvnw spring-boot:run` on the `local` profile, export the variables yourself, or use the
+> `dev` profile, which carries localhost defaults.
 
 ---
 

@@ -10,8 +10,50 @@ JSON, and a separate Vite single-page app.
 | Backend | Java 21, Spring Boot 4.0.1, Spring Security 7, Spring Data JPA, Flyway, PostgreSQL |
 | Frontend | React 19, TypeScript, Vite, Tailwind CSS, axios, lucide-react, sonner |
 | Auth | Stateless JWT (HS384) |
-| Docs | [ER](docs/ER.md) · [FLOW](docs/FLOW.md) · [DESIGN](docs/DESIGN.md) · [TESTING](docs/TESTING.md) · [CI/CD](docs/CICD.md) |
+| Docs | [ER](docs/ER.md) · [FLOW](docs/FLOW.md) · [DESIGN](docs/DESIGN.md) · [TESTING](docs/TESTING.md) · [SEED](docs/SEED.md) · [CI/CD](docs/CICD.md) |
 | Build requirements | [task.md](task.md) |
+| Try it | [Two-minute demo](#try-it-in-two-minutes) — runs locally, no database to install |
+
+---
+
+## Try it in two minutes
+
+> **There is no hosted demo.** Nothing is deployed, so there is no URL to click. The commands
+> below are the preview: they need only a JDK and Node, no database, and no configuration, and
+> they start the app with data already in it.
+
+```bash
+git clone https://github.com/NweNweWinThan-X/spring-boot-todolist.git
+cd spring-boot-todolist
+```
+
+```bash
+# Terminal 1 — API on :8080, in-memory H2, no environment variables needed
+./mvnw spring-boot:run -Dspring-boot.run.profiles=h2
+```
+
+```bash
+# Terminal 2 — SPA on :5173
+npm --prefix frontend install && npm --prefix frontend run dev
+```
+
+Open <http://localhost:5173> and sign in:
+
+| | |
+|--|--|
+| Username | `demo` |
+| Password | `Demo1234!` |
+
+The account arrives with 19 tasks across 3 projects and 4 labels, arranged so every view is
+populated on first sight — overdue, due today, upcoming, inbox, all three statuses and all four
+Eisenhower quadrants. A second account, `alex` with the same password, exists to show that
+accounts cannot see each other's data. Full dataset in [SEED](docs/SEED.md).
+
+Nothing is written outside the process: the `h2` profile keeps everything in memory and discards
+it when you stop the server.
+
+> **Ports are fixed on purpose.** The SPA calls `http://localhost:8080/api/v1` and the API's CORS
+> allowlist contains only `:3000` and `:5173`, so moving either port breaks the pair.
 
 ---
 
@@ -35,7 +77,7 @@ cp .env.example .env     # fill in DB_PASSWORD
 | `DB_URL` | Defaults to `jdbc:postgresql://localhost:5432/todolist` |
 | `DB_USERNAME` / `DB_PASSWORD` | Connection credentials (required) |
 | `JWT_SECRET` | Base64 signing key, 256 bits or more. Unset means a random key per process, so tokens stop verifying after a restart |
-| `APP_ADMIN_USERNAME` / `APP_ADMIN_PASSWORD` / `APP_ADMIN_EMAIL` | Creates an administrator on first start of the `local` and `h2` profiles |
+| `APP_ADMIN_USERNAME` / `APP_ADMIN_PASSWORD` / `APP_ADMIN_EMAIL` | Creates an administrator on first start of the `local`, `dev` and `h2` profiles |
 
 ### 1. Backend
 
@@ -44,6 +86,17 @@ cp .env.example .env     # fill in DB_PASSWORD
 ```
 
 Flyway migrates on startup. The API listens on `http://localhost:8080`.
+
+Two profiles need no setup at all and come with demo data already loaded — sign in as `demo`
+with `Demo1234!`:
+
+```bash
+./mvnw spring-boot:run -Dspring-boot.run.profiles=dev   # PostgreSQL on localhost, no env vars
+./mvnw spring-boot:run -Dspring-boot.run.profiles=h2    # in-memory, no database to install
+```
+
+Note that `.env` is read by `docker compose` only — Spring Boot does not load it. See
+[SEED](docs/SEED.md).
 
 ### 2. Frontend
 
@@ -139,7 +192,7 @@ spring-boot-todolist/
 │  └─ shared/       config, domain, exception, log, security, web
 ├─ src/main/resources/db/migration/   Flyway
 ├─ frontend/        React + TypeScript SPA
-├─ docs/            ER, FLOW, DESIGN
+├─ docs/            ER, FLOW, DESIGN, TESTING, SEED, CI/CD
 ├─ .claude/         skills used by Claude Code on this repo
 ├─ .husky/          git hooks
 ├─ Dockerfile  docker-compose.yml  Makefile
