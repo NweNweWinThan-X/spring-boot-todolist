@@ -10,9 +10,57 @@ JSON, and a separate Vite single-page app.
 | Backend | Java 21, Spring Boot 4.0.1, Spring Security 7, Spring Data JPA, Flyway, PostgreSQL |
 | Frontend | React 19, TypeScript, Vite, Tailwind CSS, axios, lucide-react, sonner |
 | Auth | Stateless JWT (HS384) |
-| Docs | [ER](docs/ER.md) · [FLOW](docs/FLOW.md) · [DESIGN](docs/DESIGN.md) · [TESTING](docs/TESTING.md) · [SEED](docs/SEED.md) · [CI/CD](docs/CICD.md) |
+| Docs | [ER](docs/ER.md) · [FLOW](docs/FLOW.md) · [DESIGN](docs/DESIGN.md) · [MANUAL](docs/MANUAL.md) · [TESTING](docs/TESTING.md) · [SEED](docs/SEED.md) · [CI/CD](docs/CICD.md) |
 | Build requirements | [task.md](task.md) |
 | Live demo | [Open in Codespaces](#live-demo) — or run it locally in two minutes |
+| Manual | [MANUAL](docs/MANUAL.md) — screen-by-screen guide, with a 15s walkthrough |
+
+---
+
+## User experience
+
+![15 second walkthrough](docs/demo.gif)
+
+The interface is one screen. Everything — capture, triage, editing, search — happens on the
+dashboard, because a to-do list that makes you navigate to add a task will not be used.
+
+**Views are derived, not filed.** Inbox, Today, Upcoming and Overdue are predicates over your
+tasks rather than folders you drop things into, so nothing has to be organised to show up in the
+right place, and the five views can never disagree with the data.
+
+**Two switches, four quadrants.** A task carries *Urgent* and *Important* independently; the
+Eisenhower quadrant is computed from the pair. There is no quadrant field to keep in sync.
+
+**Nothing is destroyed quietly.** Deleting asks first and then soft-deletes. Deleting a project
+returns its tasks to the Inbox instead of taking them down with it.
+
+### Visual language
+
+| | |
+|--|--|
+| Palette | Tailwind `slate` for surfaces and text; a violet→fuchsia gradient for the single primary action on each screen |
+| Priority | `emerald` Low · `amber` Medium · `rose` High — as a badge and as the stripe down the card edge |
+| Quadrants | Dashed borders: `rose` Do · `violet` Schedule · `amber` Delegate · `slate` Eliminate |
+| Dark mode | A manual toggle adding `.dark` to `<html>`, remembered per browser. Not tied to the OS setting, so the choice stays where the user put it |
+| Type | System font stack, `tabular-nums` for counts so numbers do not jitter as they update |
+| Icons | lucide-react, 16px, always paired with a text label |
+
+Colour never carries meaning alone: every priority badge and quadrant also states its name in
+words, so the list stays readable without colour vision.
+
+### How it responds
+
+| Moment | What the UI does |
+|--|--|
+| Loading | Skeleton cards shaped like the real rows, not a spinner over an empty page |
+| Empty | A purposeful empty state explaining what to do next, not a blank panel |
+| Success | A toast, bottom-right — away from the task list it just changed |
+| Failure | The server's message verbatim, so validation errors say what is actually wrong |
+| Destructive | A confirmation dialog, every time |
+| Progress | Today's completion updates the moment a checkbox is ticked |
+
+Full rationale and the screen inventory are in [DESIGN.md](docs/DESIGN.md) §5; the step-by-step
+guide is [MANUAL.md](docs/MANUAL.md).
 
 ---
 

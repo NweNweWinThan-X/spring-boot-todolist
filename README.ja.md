@@ -10,9 +10,57 @@ The English version is at [README.md](README.md).
 | バックエンド | Java 21, Spring Boot 4.0.1, Spring Security 7, Spring Data JPA, Flyway, PostgreSQL |
 | フロントエンド | React 19, TypeScript, Vite, Tailwind CSS, axios, lucide-react, sonner |
 | 認証 | ステートレス JWT（HS384） |
-| ドキュメント | [ER](docs/ER.md) · [FLOW](docs/FLOW.md) · [DESIGN](docs/DESIGN.md) · [TESTING](docs/TESTING.md) · [SEED](docs/SEED.md) · [CI/CD](docs/CICD.md) |
+| ドキュメント | [ER](docs/ER.md) · [FLOW](docs/FLOW.md) · [DESIGN](docs/DESIGN.md) · [MANUAL](docs/MANUAL.md) · [TESTING](docs/TESTING.md) · [SEED](docs/SEED.md) · [CI/CD](docs/CICD.md) |
 | 要件 | [task.md](task.md) |
 | ライブデモ | [Codespacesで開く](#ライブデモ) — またはローカルで2分 |
+| マニュアル | [MANUAL](docs/MANUAL.md) — 画面ごとの操作手順と15秒のデモ |
+
+---
+
+## ユーザー体験
+
+![15秒のウォークスルー](docs/demo.gif)
+
+画面は1つだけです。登録・仕分け・編集・検索のすべてをダッシュボード上で行います。
+タスクを1件追加するのに画面遷移が必要なTODOアプリは、結局使われなくなるためです。
+
+**ビューは「置き場所」ではなく「条件」です。** 受信箱・今日・今後・期限切れは、
+タスクを振り分けるフォルダではなく、タスクに対する述語として定義されています。
+だから整理しなくても正しい場所に現れ、5つのビューがデータと食い違うことがありません。
+
+**2つのスイッチ、4つの象限。** タスクは「緊急」と「重要」を独立して持ち、
+アイゼンハワーの象限はその組み合わせから導出されます。同期すべき象限フィールドはありません。
+
+**黙って壊すことはしません。** 削除は必ず確認してから論理削除します。
+プロジェクトを削除しても、中のタスクは受信箱に戻るだけで消えません。
+
+### 視覚言語
+
+| | |
+|--|--|
+| パレット | 面と文字は Tailwind の `slate`。各画面で1つだけの主要アクションに violet→fuchsia のグラデーション |
+| 優先度 | `emerald` 低 ・ `amber` 中 ・ `rose` 高。バッジとカード左端のストライプの両方で表現 |
+| 象限 | 破線の枠。`rose` Do ・ `violet` Schedule ・ `amber` Delegate ・ `slate` Eliminate |
+| ダークモード | `<html>` に `.dark` を付け外しする手動トグル。ブラウザごとに記憶し、OS設定には追従しない |
+| 文字 | システムフォント。件数は `tabular-nums` で、更新時に数字が揺れないようにしている |
+| アイコン | lucide-react、16px。必ずテキストラベルと併記する |
+
+色だけで意味を伝えることはありません。優先度バッジも象限も名前を文字で持つため、
+色が判別できなくても一覧は読めます。
+
+### 応答のしかた
+
+| 場面 | UIの振る舞い |
+|--|--|
+| 読み込み中 | スピナーではなく、実際の行と同じ形のスケルトン |
+| 空のとき | 白紙ではなく、次に何をすればよいかを示す空状態 |
+| 成功 | 右下のトースト。変更したばかりのタスク一覧に重ならない位置 |
+| 失敗 | サーバーのメッセージをそのまま表示。入力エラーの理由がそのまま分かる |
+| 破壊的操作 | 毎回かならず確認ダイアログ |
+| 進捗 | チェックを入れた瞬間に当日の進捗が更新される |
+
+設計の根拠と画面一覧は [DESIGN.md](docs/DESIGN.md) §5、操作手順は
+[MANUAL.md](docs/MANUAL.md) にあります。
 
 ---
 

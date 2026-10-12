@@ -43,3 +43,6 @@ Thumbs.db
 # --- Logs ---
 *.log
 logs/
+
+# Intermediate frames for docs/demo.gif (see frontend/e2e/demo-video.spec.ts)
+docs/.demo-frames/
