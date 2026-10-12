@@ -116,11 +116,62 @@ base images monthly, labelled by area.
 
 ## Branch protection
 
-`.husky/pre-push` refuses a direct push to `develop` or `release`; work goes through a branch and
-a pull request. CI runs on `feature/**` pushes too, so a branch is validated before the PR opens.
+Two layers, because they fail in different ways.
 
-Worth configuring on the repository itself, which the hook cannot enforce for other clients:
-require the `backend`, `frontend` and `e2e` checks to pass before merging into `develop`.
+### Local — `.husky/pre-push`
+
+Refuses a direct push to `develop` or `release`. It reads the refs git passes on stdin, so it
+judges the **destination** rather than the checked-out branch: pushing `main:develop` from a
+feature branch is caught, and pushing an unrelated branch while standing on `develop` is not.
+Deleting a protected branch is refused too.
+
+Its limit is that a hook only exists in the clone it was installed into. A fresh clone that
+never ran `npm install` has no hooks at all, and `--no-verify` skips it. It is a guard against
+mistakes, not a control.
+
+### Server — ruleset for `main`
+
+[`.github/rulesets/main.json`](../.github/rulesets/main.json) is the enforceable half, applying
+to everyone and every client.
+
+| Rule | Effect |
+|--|--|
+| `deletion` | `main` cannot be deleted |
+| `non_fast_forward` | no force pushes, so history cannot be rewritten |
+| `pull_request` | every change arrives through a PR; direct pushes to `main` are refused |
+| `required_status_checks` | Backend tests, Frontend build, End-to-end tests and Docker images build must pass |
+
+**Import it** — GitHub does not read rulesets out of the repository, so the file has to be
+uploaded once:
+
+> Settings → Rules → Rulesets → New ruleset → **Import a ruleset** → choose
+> `.github/rulesets/main.json`
+
+Or, with an authenticated `gh`:
+
+```bash
+gh api -X POST repos/:owner/:repo/rulesets --input .github/rulesets/main.json
+```
+
+Three places it deliberately departs from
+[github/ruleset-recipes](https://github.com/github/ruleset-recipes):
+
+- **`required_approving_review_count` is 0, not 2.** GitHub does not let you approve your own
+  pull request, so on a single-maintainer repository any non-zero count deadlocks every PR.
+  A PR is still required — only the approval is not.
+- **No `required_linear_history`.** PRs here merge with merge commits (`Merge pull request #3`),
+  which that rule would reject.
+- **`strict_required_status_checks_policy` is false.** True forces a branch to be rebased onto
+  `main` whenever `main` moves, which costs a CI round trip per PR for little gain here.
+
+`bypass_actors` is empty, so the rules apply to the owner as well. Add an escape hatch only if
+you want one:
+
+```json
+"bypass_actors": [{ "actor_id": 5, "actor_type": "RepositoryRole", "bypass_mode": "always" }]
+```
+
+`develop` has no ruleset yet; it is protected only by the local hook.
 
 ---
 
