@@ -11,7 +11,10 @@
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
     "test:e2e:report": "playwright show-report",
-    "screenshots": "playwright test e2e/screenshots.spec.ts"
+    "screenshots": "playwright test e2e/screenshots.spec.ts",
+    "demo:frames": "playwright test demo-video.spec.ts",
+    "demo:gif": "python3 scripts/make-demo-gif.py ../docs/.demo-frames ../docs/demo.gif",
+    "demo": "npm run demo:frames && npm run demo:gif"
   },
   "dependencies": {
     "axios": "1.20.0",
