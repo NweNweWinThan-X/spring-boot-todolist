@@ -3,7 +3,7 @@
 # =========================
 # Build ステージ
 # =========================
-FROM eclipse-temurin:21-jdk AS backend-build
+FROM eclipse-temurin:25-jdk AS backend-build
 
 WORKDIR /workspace
 
@@ -28,7 +28,7 @@ RUN --mount=type=cache,target=/root/.m2 \
 # =========================
 # Runtime ステージ
 # =========================
-FROM eclipse-temurin:21-jre-alpine AS runtime
+FROM eclipse-temurin:25-jre-alpine AS runtime
 
 # JVM / タイムゾーン設定
 ENV TZ=Asia/Tokyo \
