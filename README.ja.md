@@ -12,15 +12,37 @@ The English version is at [README.md](README.md).
 | 認証 | ステートレス JWT（HS384） |
 | ドキュメント | [ER](docs/ER.md) · [FLOW](docs/FLOW.md) · [DESIGN](docs/DESIGN.md) · [TESTING](docs/TESTING.md) · [SEED](docs/SEED.md) · [CI/CD](docs/CICD.md) |
 | 要件 | [task.md](task.md) |
-| お試し | [2分で動かす](#2分で動かす) — ローカル実行。DBのインストール不要 |
+| ライブデモ | [Codespacesで開く](#ライブデモ) — またはローカルで2分 |
 
 ---
 
-## 2分で動かす
+## ライブデモ
 
-> **公開中のデモはありません。** どこにもデプロイしていないため、クリックできるURLは存在しません。
-> 代わりに下のコマンドがプレビューです。JDK と Node だけあれば動き、データベースも設定も不要で、
-> 最初からデータが入った状態で起動します。
+[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/NweNweWinThan-X/spring-boot-todolist)
+
+> **このアプリをホスティングしているサーバーはありません。** どこにもデプロイしていないため、
+> 他人のマシン上で動く公開URLは存在しません。上のボタンが最も近いもので、ブラウザ上の環境に
+> 一式を構築します。下の手順はローカルで動かす方法です。どちらも最初からデモデータが入っています。
+
+### 方法A — ブラウザだけ、インストール不要
+
+バッジをクリックすると、GitHub Codespaces が
+[`.devcontainer/devcontainer.json`](.devcontainer/devcontainer.json) から環境
+（JDK 21、Node 22、npm パッケージ）を構築します。あとはターミナルで2つ実行するだけです。
+
+```bash
+./mvnw spring-boot:run -Dspring-boot.run.profiles=h2   # ターミナル1
+npm --prefix frontend run dev                           # ターミナル2
+```
+
+ポート5173は自動で転送され、プレビューが開きます。SPA は Vite の開発プロキシ `/api` 経由で
+API を呼ぶため、自動生成される `*.app.github.dev` のホスト名を API の CORS 許可リストに
+加える必要はありません。
+
+GitHubアカウントが必要で、そのアカウントの Codespaces 無料枠を消費します。ホスティングされた
+ページではなく実際の開発環境なので、初回の構築には数分かかります。
+
+### 方法B — 自分のマシンで2分
 
 ```bash
 git clone https://github.com/NweNweWinThan-X/spring-boot-todolist.git

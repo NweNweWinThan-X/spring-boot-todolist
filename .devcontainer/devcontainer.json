@@ -1,0 +1,28 @@
+{
+  "name": "spring-boot-todolist",
+  "image": "mcr.microsoft.com/devcontainers/java:1-21-bookworm",
+  "features": {
+    "ghcr.io/devcontainers/features/node:1": { "version": "22" }
+  },
+  "forwardPorts": [5173, 8080],
+  "portsAttributes": {
+    "5173": { "label": "SPA", "onAutoForward": "openPreview" },
+    "8080": { "label": "API", "onAutoForward": "silent" }
+  },
+  "containerEnv": {
+    "SPRING_PROFILES_ACTIVE": "h2",
+    "TZ": "Asia/Tokyo",
+    "VITE_API_BASE_URL": "/api/v1"
+  },
+  "postCreateCommand": "npm --prefix frontend ci",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "vscjava.vscode-java-pack",
+        "vmware.vscode-boot-dev-pack",
+        "dbaeumer.vscode-eslint",
+        "bradlc.vscode-tailwindcss"
+      ]
+    }
+  }
+}

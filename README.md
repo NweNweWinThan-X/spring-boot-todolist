@@ -12,15 +12,38 @@ JSON, and a separate Vite single-page app.
 | Auth | Stateless JWT (HS384) |
 | Docs | [ER](docs/ER.md) · [FLOW](docs/FLOW.md) · [DESIGN](docs/DESIGN.md) · [TESTING](docs/TESTING.md) · [SEED](docs/SEED.md) · [CI/CD](docs/CICD.md) |
 | Build requirements | [task.md](task.md) |
-| Try it | [Two-minute demo](#try-it-in-two-minutes) — runs locally, no database to install |
+| Live demo | [Open in Codespaces](#live-demo) — or run it locally in two minutes |
 
 ---
 
-## Try it in two minutes
+## Live demo
 
-> **There is no hosted demo.** Nothing is deployed, so there is no URL to click. The commands
-> below are the preview: they need only a JDK and Node, no database, and no configuration, and
-> they start the app with data already in it.
+[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/NweNweWinThan-X/spring-boot-todolist)
+
+> **No server is hosting this application.** Nothing is deployed, so there is no public URL that
+> runs on someone else's machine. The button above is the closest thing: it builds the whole
+> stack in a browser-based environment, and the steps below run it locally. Both start with the
+> demo data already loaded.
+
+### Option A — in the browser, nothing installed
+
+Click the badge. GitHub Codespaces builds the environment from
+[`.devcontainer/devcontainer.json`](.devcontainer/devcontainer.json) — JDK 21, Node 22 and the
+npm packages — then run two commands in its terminal:
+
+```bash
+./mvnw spring-boot:run -Dspring-boot.run.profiles=h2   # terminal 1
+npm --prefix frontend run dev                           # terminal 2
+```
+
+Port 5173 is forwarded and opens by itself. The SPA reaches the API through the Vite dev proxy
+at `/api`, so the generated `*.app.github.dev` hostname never has to appear in the API's CORS
+allowlist.
+
+Requires a GitHub account, and it draws on that account's Codespaces free tier. It is a real
+environment rather than a hosted page, so the first build takes a couple of minutes.
+
+### Option B — on your machine, two minutes
 
 ```bash
 git clone https://github.com/NweNweWinThan-X/spring-boot-todolist.git
