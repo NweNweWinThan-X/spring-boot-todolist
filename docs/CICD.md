@@ -129,28 +129,34 @@ Its limit is that a hook only exists in the clone it was installed into. A fresh
 never ran `npm install` has no hooks at all, and `--no-verify` skips it. It is a guard against
 mistakes, not a control.
 
-### Server — ruleset for `main`
+### Server — rulesets
 
-[`.github/rulesets/main.json`](../.github/rulesets/main.json) is the enforceable half, applying
-to everyone and every client.
+The enforceable half, applying to everyone and every client:
+
+| File | Protects |
+|--|--|
+| [`main.json`](../.github/rulesets/main.json) | `~DEFAULT_BRANCH`, i.e. `main` |
+| [`develop.json`](../.github/rulesets/develop.json) | `refs/heads/develop`, named explicitly since it is not the default branch |
+
+Both carry the same four rules; they differ only in `name` and `conditions`.
 
 | Rule | Effect |
 |--|--|
-| `deletion` | `main` cannot be deleted |
+| `deletion` | the branch cannot be deleted |
 | `non_fast_forward` | no force pushes, so history cannot be rewritten |
-| `pull_request` | every change arrives through a PR; direct pushes to `main` are refused |
+| `pull_request` | every change arrives through a PR; direct pushes are refused |
 | `required_status_checks` | Backend tests, Frontend build, End-to-end tests and Docker images build must pass |
 
 **Import it** — GitHub does not read rulesets out of the repository, so the file has to be
 uploaded once:
 
-> Settings → Rules → Rulesets → New ruleset → **Import a ruleset** → choose
-> `.github/rulesets/main.json`
+> Settings → Rules → Rulesets → New ruleset → **Import a ruleset** → choose the file
 
-Or, with an authenticated `gh`:
+Once per file. Or, with an authenticated `gh`:
 
 ```bash
 gh api -X POST repos/:owner/:repo/rulesets --input .github/rulesets/main.json
+gh api -X POST repos/:owner/:repo/rulesets --input .github/rulesets/develop.json
 ```
 
 Three places it deliberately departs from
@@ -171,7 +177,12 @@ you want one:
 "bypass_actors": [{ "actor_id": 5, "actor_type": "RepositoryRole", "bypass_mode": "always" }]
 ```
 
-`develop` has no ruleset yet; it is protected only by the local hook.
+Importing `develop.json` makes the local hook redundant rather than wrong: the hook still gives
+faster feedback, refusing the push before anything leaves your machine, while the ruleset is what
+actually holds for a fresh clone or a `--no-verify`.
+
+`release/**` is covered by the hook but has no ruleset. Add one by copying `develop.json` and
+setting `"include": ["refs/heads/release/**"]`.
 
 ---
 
